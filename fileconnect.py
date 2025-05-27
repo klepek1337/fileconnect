@@ -1,44 +1,155 @@
 import os
 import fnmatch
 from tkinter import Tk, filedialog, simpledialog, messagebox
+from pathspec import PathSpec
+from pathspec.patterns import GitWildMatchPattern
+
+# Maximum file size to include (in bytes) - 1MB
+MAX_FILE_SIZE = 1024 * 1024
 
 # Default patterns to ignore
 DEFAULT_IGNORE_PATTERNS = [
+    # Node.js
     'node_modules/',
-    '.git/',
+    'npm-debug.log',
+    'yarn-debug.log',
+    'yarn-error.log',
+    '.npm/',
+    '.yarn/',
+    'package-lock.json',
+    'yarn.lock',
+    
+    # Python
     '__pycache__/',
     '*.pyc',
     '*.pyo',
     '*.pyd',
-    '.env',
-    'venv/',
-    '.venv/',
-    'env/',
-    '.idea/',
-    '.vscode/',
-    '*.log',
-    '*.tmp',
-    '*.temp',
-    '*.swp',
-    '*.swo',
-    '*.bak',
-    '*.cache',
+    '*.so',
+    '*.egg',
+    '*.egg-info/',
     'dist/',
     'build/',
     '*.egg-info/',
     '*.egg',
-    '*.so',
-    '*.dll',
-    '*.dylib',
-    '*.exe',
-    '*.bin',
-    '*.dat',
-    '*.db',
+    '*.manifest',
+    '*.spec',
+    'pip-log.txt',
+    'pip-delete-this-directory.txt',
+    'htmlcov/',
+    '.tox/',
+    '.nox/',
+    '.coverage',
+    '.coverage.*',
+    'coverage.xml',
+    '*.cover',
+    '*.py,cover',
+    '.hypothesis/',
+    '.pytest_cache/',
+    'cover/',
+    '*.mo',
+    '*.pot',
+    '*.log',
+    'local_settings.py',
+    'db.sqlite3',
+    'instance/',
+    '.webassets-cache',
+    '.env',
+    '.venv',
+    'env/',
+    'venv/',
+    'ENV/',
+    'env.bak/',
+    'venv.bak/',
+    
+    # IDEs and editors
+    '.idea/',
+    '.vscode/',
+    '*.swp',
+    '*.swo',
+    '*~',
+    '*.sublime-workspace',
+    '*.sublime-project',
+    '.project',
+    '.classpath',
+    '.settings/',
+    '*.tmproj',
+    '*.esproj',
+    'nbproject/',
+    '*.sublime-project',
+    '*.sublime-workspace',
+    '.vs/',
+    '*.suo',
+    '*.ntvs*',
+    '*.njsproj',
+    '*.sln',
+    '*.sw?',
+    '*.bak',
+    '*.orig',
+    '*.rej',
+    '*.tmp',
+    '*.temp',
+    '*.log',
+    '*.pid',
+    '*.seed',
+    '*.pid.lock',
+    
+    # OS generated files
+    '.DS_Store',
+    '.DS_Store?',
+    '._*',
+    '.Spotlight-V100',
+    '.Trashes',
+    'ehthumbs.db',
+    'Thumbs.db',
+    
+    # Build and package files
+    '*.7z',
+    '*.dmg',
+    '*.gz',
+    '*.iso',
+    '*.jar',
+    '*.rar',
+    '*.tar',
+    '*.zip',
+    '*.tar.gz',
+    '*.tar.bz2',
+    '*.tar.xz',
+    '*.tgz',
+    '*.tbz2',
+    '*.txz',
+    '*.zip',
+    '*.rar',
+    '*.7z',
+    '*.iso',
+    '*.img',
+    '*.vmdk',
+    '*.vhd',
+    '*.vhdx',
+    '*.vdi',
+    '*.qcow2',
+    '*.raw',
+    '*.dmg',
+    '*.sparseimage',
+    '*.sparsebundle',
+    '*.hfs',
+    '*.hfsx',
+    '*.udf',
+    
+    # Database files
     '*.sqlite',
     '*.sqlite3',
+    '*.db',
     '*.db-journal',
     '*.db-shm',
     '*.db-wal',
+    
+    # Binary files
+    '*.exe',
+    '*.dll',
+    '*.so',
+    '*.dylib',
+    '*.bin',
+    '*.dat',
     '*.pid',
     '*.pid.lock',
     '*.lock',
@@ -57,67 +168,43 @@ DEFAULT_IGNORE_PATTERNS = [
     '*.diff',
     '*.patch',
     '*.log',
-    '*.gz',
-    '*.zip',
-    '*.tar',
-    '*.rar',
-    '*.7z',
-    '*.bz2',
-    '*.xz',
-    '*.lzma',
-    '*.tgz',
-    '*.tbz2',
-    '*.txz',
-    '*.tlz',
-    '*.tar.gz',
-    '*.tar.bz2',
-    '*.tar.xz',
-    '*.tar.lzma',
-    '*.zip',
-    '*.rar',
-    '*.7z',
-    '*.iso',
-    '*.img',
-    '*.vmdk',
-    '*.vhd',
-    '*.vhdx',
-    '*.vdi',
-    '*.qcow2',
-    '*.raw',
-    '*.dmg',
-    '*.sparseimage',
-    '*.sparsebundle',
-    '*.hfs',
-    '*.hfsx',
-    '*.udf',
-    '*.iso',
-    '*.img',
-    '*.vmdk',
-    '*.vhd',
-    '*.vhdx',
-    '*.vdi',
-    '*.qcow2',
-    '*.raw',
-    '*.dmg',
-    '*.sparseimage',
-    '*.sparsebundle',
-    '*.hfs',
-    '*.hfsx',
-    '*.udf',
-    '*.iso',
-    '*.img',
-    '*.vmdk',
-    '*.vhd',
-    '*.vhdx',
-    '*.vdi',
-    '*.qcow2',
-    '*.raw',
-    '*.dmg',
-    '*.sparseimage',
-    '*.sparsebundle',
-    '*.hfs',
-    '*.hfsx',
-    '*.udf',
+    
+    # Git
+    '.git/',
+    '.gitignore',
+    '.gitattributes',
+    '.gitmodules',
+    '.gitkeep',
+    '.gitattributes',
+    '.gitmodules',
+    '.gitkeep',
+    
+    # Other
+    '*.log',
+    '*.tmp',
+    '*.temp',
+    '*.swp',
+    '*.swo',
+    '*.bak',
+    '*.cache',
+    '*.pid',
+    '*.pid.lock',
+    '*.lock',
+    '*.lck',
+    '*.part',
+    '*.partial',
+    '*.temp',
+    '*.tmp',
+    '*.bak',
+    '*.swp',
+    '*.swo',
+    '*.orig',
+    '*.rej',
+    '*.old',
+    '*.new',
+    '*.diff',
+    '*.patch',
+    '*.log',
 ]
 
 def find_all_gitignores(folder_path):
@@ -153,64 +240,77 @@ def get_all_gitignore_patterns(folder_path):
     
     return list(patterns)
 
-def should_ignore(path, gitignore_patterns, base_path):
-    """Check if a path should be ignored based on .gitignore patterns."""
-    if not gitignore_patterns:
-        return False
-        
-    rel_path = os.path.relpath(path, base_path).replace('\\', '/')
-    is_dir = os.path.isdir(path)
+def get_gitignore_spec(folder_path):
+    """Get PathSpec object for all .gitignore patterns in the directory tree."""
+    patterns = []
     
-    for pattern in gitignore_patterns:
-        # Handle directory patterns
-        if pattern.endswith('/'):
-            if not is_dir:
+    # Add default patterns
+    patterns.extend(DEFAULT_IGNORE_PATTERNS)
+    
+    # Find and read all .gitignore files
+    for root, _, files in os.walk(folder_path):
+        if '.gitignore' in files:
+            gitignore_path = os.path.join(root, '.gitignore')
+            try:
+                with open(gitignore_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#'):
+                            patterns.append(line)
+            except Exception:
                 continue
-            pattern = pattern[:-1]
-            if fnmatch.fnmatch(rel_path, pattern) or rel_path.startswith(pattern + '/'):
-                return True
-        # Handle file patterns
-        else:
-            if fnmatch.fnmatch(rel_path, pattern):
-                return True
-            if is_dir and fnmatch.fnmatch(rel_path, pattern + '/*'):
-                return True
     
-    return False
+    return PathSpec.from_lines(GitWildMatchPattern, patterns)
 
-def generate_folder_structure(folder_path, output_file, prefix="", gitignore_patterns=None):
+def should_ignore(path, gitignore_spec, base_path):
+    """Check if a path should be ignored based on gitignore patterns."""
+    if not gitignore_spec:
+        return False
+    
+    # Get relative path from base_path
+    try:
+        rel_path = os.path.relpath(path, base_path).replace('\\', '/')
+        
+        # Check if file is too large
+        if os.path.isfile(path):
+            try:
+                if os.path.getsize(path) > MAX_FILE_SIZE:
+                    return True
+            except Exception:
+                return True
+        
+        return gitignore_spec.match_file(rel_path)
+    except Exception:
+        return True  # If there's any error, better to ignore the file
+
+def generate_folder_structure(folder_path, output_file, prefix="", gitignore_spec=None):
     """Generate a tree-like structure of the folder and save it to a file."""
     try:
         with open(output_file, 'w', encoding='utf-8') as outfile:
             outfile.write(f"### Struktura folderu: {os.path.basename(folder_path)} ###\n\n")
             
             def write_structure(path, prefix=""):
-                # Don't process if this path should be ignored
-                if gitignore_patterns and should_ignore(path, gitignore_patterns, folder_path):
+                if gitignore_spec and should_ignore(path, gitignore_spec, folder_path):
                     return
                 
                 if os.path.isfile(path):
                     outfile.write(f"{prefix}├── {os.path.basename(path)}\n")
                 else:
-                    # Ensure directory itself is not skipped if the pattern was only for contents
-                    # This is a simplification, full gitignore is more complex
-                    if prefix != "": # Avoid skipping the root directory entry
-                         outfile.write(f"{prefix}└── {os.path.basename(path)}/\n")
+                    if prefix != "":
+                        outfile.write(f"{prefix}└── {os.path.basename(path)}/\n")
                     
                     prefix += "    "
                     
                     items = sorted(os.listdir(path))
                     for i, item in enumerate(items):
                         item_path = os.path.join(path, item)
-                        # Check again for each item if it should be ignored
-                        if gitignore_patterns and should_ignore(item_path, gitignore_patterns, folder_path):
+                        if gitignore_spec and should_ignore(item_path, gitignore_spec, folder_path):
                             continue
                             
                         is_last = i == len(items) - 1
                         current_prefix = prefix[:-4] + ("└── " if is_last else "├── ")
                         
                         if os.path.isdir(item_path):
-                            # Recursive call will check should_ignore again for the directory
                             write_structure(item_path, prefix + "    ")
                         else:
                             outfile.write(f"{current_prefix}{item}\n")
@@ -221,27 +321,17 @@ def generate_folder_structure(folder_path, output_file, prefix="", gitignore_pat
     except Exception as e:
         messagebox.showerror("Błąd", f"Wystąpił problem podczas generowania struktury folderu: {e}")
 
-def get_all_files(folder_path, gitignore_patterns=None):
-    """Get all files from a folder and its subfolders, respecting .gitignore patterns."""
+def get_all_files(folder_path, gitignore_spec=None):
+    """Get all files from a folder and its subfolders, respecting gitignore patterns."""
     all_files = []
-    # Use os.walk but filter based on gitignore
     for root, dirs, files in os.walk(folder_path, topdown=True):
         # Filter directories in-place to prevent os.walk from entering ignored ones
-        if gitignore_patterns:
-             # Create a list of indices to remove from dirs
-            dirs_to_remove = []
-            for i in range(len(dirs)):
-                dir_path = os.path.join(root, dirs[i])
-                if should_ignore(dir_path, gitignore_patterns, folder_path):
-                    dirs_to_remove.append(i)
-            
-            # Remove ignored directories (iterate backwards to avoid index issues)
-            for i in sorted(dirs_to_remove, reverse=True):
-                del dirs[i]
-
+        if gitignore_spec:
+            dirs[:] = [d for d in dirs if not should_ignore(os.path.join(root, d), gitignore_spec, folder_path)]
+        
         for file in files:
             file_path = os.path.join(root, file)
-            if not gitignore_patterns or not should_ignore(file_path, gitignore_patterns, folder_path):
+            if not gitignore_spec or not should_ignore(file_path, gitignore_spec, folder_path):
                 all_files.append(file_path)
     return all_files
 
@@ -311,10 +401,10 @@ def merge_files():
             messagebox.showinfo("Anulowano", "Nie wybrano pliku wynikowego.")
             return
 
-        # Get all gitignore patterns from all .gitignore files
-        gitignore_patterns = get_all_gitignore_patterns(folder_path)
+        # Get gitignore patterns
+        gitignore_spec = get_gitignore_spec(folder_path)
         
-        generate_folder_structure(folder_path, output_file, gitignore_patterns=gitignore_patterns)
+        generate_folder_structure(folder_path, output_file, gitignore_spec=gitignore_spec)
     
     elif mode == "3":
         # Wybierz folder
@@ -335,22 +425,21 @@ def merge_files():
             return
 
         try:
-            # Get all gitignore patterns from all .gitignore files
-            gitignore_patterns = get_all_gitignore_patterns(folder_path)
+            # Get gitignore patterns
+            gitignore_spec = get_gitignore_spec(folder_path)
             
             # Najpierw generujemy strukturę folderu
             with open(output_file, 'w', encoding='utf-8') as outfile:
                 outfile.write(f"### Struktura folderu: {os.path.basename(folder_path)} ###\n\n")
                 
-                # Use the improved write_structure function
                 def write_structure(path, prefix=""):
-                    if gitignore_patterns and should_ignore(path, gitignore_patterns, folder_path):
+                    if gitignore_spec and should_ignore(path, gitignore_spec, folder_path):
                         return
                     
                     if os.path.isfile(path):
                         outfile.write(f"{prefix}├── {os.path.basename(path)}\n")
                     else:
-                        if prefix != "": # Avoid skipping the root directory entry
+                        if prefix != "":
                             outfile.write(f"{prefix}└── {os.path.basename(path)}/\n")
                         
                         prefix += "    "
@@ -358,7 +447,7 @@ def merge_files():
                         items = sorted(os.listdir(path))
                         for i, item in enumerate(items):
                             item_path = os.path.join(path, item)
-                            if gitignore_patterns and should_ignore(item_path, gitignore_patterns, folder_path):
+                            if gitignore_spec and should_ignore(item_path, gitignore_spec, folder_path):
                                 continue
                                 
                             is_last = i == len(items) - 1
@@ -373,8 +462,7 @@ def merge_files():
                 
                 # Następnie dodajemy zawartość plików
                 outfile.write("\n\n### ZAWARTOŚĆ PLIKÓW ###\n\n")
-                # get_all_files already uses gitignore_patterns
-                all_files = get_all_files(folder_path, gitignore_patterns)
+                all_files = get_all_files(folder_path, gitignore_spec)
                 for file_path in all_files:
                     try:
                         with open(file_path, 'r', encoding='utf-8') as infile:
@@ -382,7 +470,6 @@ def merge_files():
                             outfile.write(infile.read())
                             outfile.write("\n\n")
                     except Exception as e:
-                        # Add error message if file cannot be read (e.g. binary file)
                         outfile.write(f"### Nie można odczytać pliku: {os.path.relpath(file_path, folder_path)} - {e} ###\n\n")
 
             messagebox.showinfo("Sukces", f"Struktura folderu i zawartość plików zostały zapisane do: {output_file}")
