@@ -39,16 +39,16 @@ Program has 3 modes:
 Output example:
 
 ```
-### Struktura folderu: project ###
+### Folder structure: project ###
 
 ├── main.go
 ├── go.mod
 └── utils/
     └── files.go
 
-### ZAWARTOŚĆ PLIKÓW ###
+### FILE CONTENTS ###
 
-### Zawartość pliku: main.go ###
+### File contents: main.go ###
 package main
 ...
 ```
@@ -78,10 +78,10 @@ fileconnect.exe
 After starting the program:
 
 ```
-Wybierz tryb:
-1 - Łączenie plików
-2 - Generowanie struktury folderu
-3 - Łączenie plików i struktura folderu
+Select mode:
+1 - Merge files
+2 - Generate folder structure
+3 - Merge files and folder structure
 ```
 
 For modes **2** and **3**:

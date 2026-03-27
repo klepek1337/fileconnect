@@ -287,7 +287,7 @@ def generate_folder_structure(folder_path, output_file, prefix="", gitignore_spe
     """Generate a tree-like structure of the folder and save it to a file."""
     try:
         with open(output_file, 'w', encoding='utf-8') as outfile:
-            outfile.write(f"### Struktura folderu: {os.path.basename(folder_path)} ###\n\n")
+            outfile.write(f"### Folder structure: {os.path.basename(folder_path)} ###\n\n")
             
             def write_structure(path, prefix=""):
                 if gitignore_spec and should_ignore(path, gitignore_spec, folder_path):
@@ -317,9 +317,9 @@ def generate_folder_structure(folder_path, output_file, prefix="", gitignore_spe
             
             write_structure(folder_path)
             
-        messagebox.showinfo("Sukces", f"Struktura folderu została zapisana do: {output_file}")
+        messagebox.showinfo("Success", f"Folder structure saved to: {output_file}")
     except Exception as e:
-        messagebox.showerror("Błąd", f"Wystąpił problem podczas generowania struktury folderu: {e}")
+        messagebox.showerror("Error", f"A problem occurred while generating the folder structure: {e}")
 
 def get_all_files(folder_path, gitignore_spec=None):
     """Get all files from a folder and its subfolders, respecting gitignore patterns."""
@@ -336,69 +336,69 @@ def get_all_files(folder_path, gitignore_spec=None):
     return all_files
 
 def merge_files():
-    # Tworzenie okna tkinter
+    # Create tkinter window
     root = Tk()
-    root.withdraw()  # Ukryj główne okno
-    root.title("Łączenie plików tekstowych")
+    root.withdraw()  # Hide main window
+    root.title("Merge text files")
 
-    # Wybierz tryb działania
-    mode = simpledialog.askstring("Tryb", "Wybierz tryb:\n1 - Łączenie plików\n2 - Generowanie struktury folderu\n3 - Łączenie plików i struktura folderu")
+    # Select operation mode
+    mode = simpledialog.askstring("Mode", "Select mode:\n1 - Merge files\n2 - Generate folder structure\n3 - Merge files and folder structure")
     
     if mode == "1":
-        # Wybierz pliki do połączenia
+        # Select files to merge
         # Note: Gitignore is not applied in this mode as specific files are selected manually
         file_paths = filedialog.askopenfilenames(
-            title="Wybierz pliki do połączenia",
-            filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki Python", "*.py"), ("Wszystkie pliki", "*.*")]
+            title="Select files to merge",
+            filetypes=[("Text files", "*.txt"), ("Python files", "*.py"), ("All files", "*.*")]
         )
         
         if not file_paths:
-            messagebox.showinfo("Brak plików", "Nie wybrano żadnych plików.")
+            messagebox.showinfo("No files", "No files selected.")
             return
 
-        # Podaj nazwę pliku wynikowego
+        # Enter output filename
         output_file = filedialog.asksaveasfilename(
-            title="Podaj nazwę pliku wynikowego",
+            title="Enter output filename",
             defaultextension=".txt",
-            filetypes=[("Pliki tekstowe", "*.txt"), ("Pliki Python", "*.py"), ("Wszystkie pliki", "*.*")]
+            filetypes=[("Text files", "*.txt"), ("Python files", "*.py"), ("All files", "*.*")]
         )
         
         if not output_file:
-            messagebox.showinfo("Anulowano", "Nie wybrano pliku wynikowego.")
+            messagebox.showinfo("Cancelled", "No output file selected.")
             return
 
-        # Połączenie zawartości plików
+        # Merge file contents
         try:
             with open(output_file, 'w', encoding='utf-8') as outfile:
                 for file_path in file_paths:
                     try:
                          with open(file_path, 'r', encoding='utf-8') as infile:
-                            outfile.write(f"### Zawartość pliku: {os.path.basename(file_path)} ###\n")
+                            outfile.write(f"### File contents: {os.path.basename(file_path)} ###\n")
                             outfile.write(infile.read())
                             outfile.write("\n\n")
                     except Exception as e:
-                         outfile.write(f"### Nie można odczytać pliku: {os.path.basename(file_path)} - {e} ###\n\n")
+                         outfile.write(f"### Cannot read file: {os.path.basename(file_path)} - {e} ###\n\n")
 
-            messagebox.showinfo("Sukces", f"Pliki zostały połączone do: {output_file}")
+            messagebox.showinfo("Success", f"Files merged to: {output_file}")
         except Exception as e:
-            messagebox.showerror("Błąd", f"Wystąpił problem podczas łączenia plików: {e}")
+            messagebox.showerror("Error", f"A problem occurred while merging files: {e}")
     
     elif mode == "2":
-        # Wybierz folder
-        folder_path = filedialog.askdirectory(title="Wybierz folder do analizy")
+        # Select folder
+        folder_path = filedialog.askdirectory(title="Select folder to analyze")
         if not folder_path:
-            messagebox.showinfo("Anulowano", "Nie wybrano folderu.")
+            messagebox.showinfo("Cancelled", "No folder selected.")
             return
 
-        # Podaj nazwę pliku wynikowego
+        # Enter output filename
         output_file = filedialog.asksaveasfilename(
-            title="Podaj nazwę pliku wynikowego",
+            title="Enter output filename",
             defaultextension=".txt",
-            filetypes=[("Pliki tekstowe", "*.txt")]
+            filetypes=[("Text files", "*.txt")]
         )
         
         if not output_file:
-            messagebox.showinfo("Anulowano", "Nie wybrano pliku wynikowego.")
+            messagebox.showinfo("Cancelled", "No output file selected.")
             return
 
         # Get gitignore patterns
@@ -407,30 +407,30 @@ def merge_files():
         generate_folder_structure(folder_path, output_file, gitignore_spec=gitignore_spec)
     
     elif mode == "3":
-        # Wybierz folder
-        folder_path = filedialog.askdirectory(title="Wybierz folder do analizy")
+        # Select folder
+        folder_path = filedialog.askdirectory(title="Select folder to analyze")
         if not folder_path:
-            messagebox.showinfo("Anulowano", "Nie wybrano folderu.")
+            messagebox.showinfo("Cancelled", "No folder selected.")
             return
 
-        # Podaj nazwę pliku wynikowego
+        # Enter output filename
         output_file = filedialog.asksaveasfilename(
-            title="Podaj nazwę pliku wynikowego",
+            title="Enter output filename",
             defaultextension=".txt",
-            filetypes=[("Pliki tekstowe", "*.txt")]
+            filetypes=[("Text files", "*.txt")]
         )
         
         if not output_file:
-            messagebox.showinfo("Anulowano", "Nie wybrano pliku wynikowego.")
+            messagebox.showinfo("Cancelled", "No output file selected.")
             return
 
         try:
             # Get gitignore patterns
             gitignore_spec = get_gitignore_spec(folder_path)
             
-            # Najpierw generujemy strukturę folderu
+            # First generate the folder structure
             with open(output_file, 'w', encoding='utf-8') as outfile:
-                outfile.write(f"### Struktura folderu: {os.path.basename(folder_path)} ###\n\n")
+                outfile.write(f"### Folder structure: {os.path.basename(folder_path)} ###\n\n")
                 
                 def write_structure(path, prefix=""):
                     if gitignore_spec and should_ignore(path, gitignore_spec, folder_path):
@@ -460,24 +460,24 @@ def merge_files():
                 
                 write_structure(folder_path)
                 
-                # Następnie dodajemy zawartość plików
-                outfile.write("\n\n### ZAWARTOŚĆ PLIKÓW ###\n\n")
+                # Then append file contents
+                outfile.write("\n\n### FILE CONTENTS ###\n\n")
                 all_files = get_all_files(folder_path, gitignore_spec)
                 for file_path in all_files:
                     try:
                         with open(file_path, 'r', encoding='utf-8') as infile:
-                            outfile.write(f"### Zawartość pliku: {os.path.relpath(file_path, folder_path)} ###\n")
+                            outfile.write(f"### File contents: {os.path.relpath(file_path, folder_path)} ###\n")
                             outfile.write(infile.read())
                             outfile.write("\n\n")
                     except Exception as e:
-                        outfile.write(f"### Nie można odczytać pliku: {os.path.relpath(file_path, folder_path)} - {e} ###\n\n")
+                        outfile.write(f"### Cannot read file: {os.path.relpath(file_path, folder_path)} - {e} ###\n\n")
 
-            messagebox.showinfo("Sukces", f"Struktura folderu i zawartość plików zostały zapisane do: {output_file}")
+            messagebox.showinfo("Success", f"Folder structure and file contents saved to: {output_file}")
         except Exception as e:
-            messagebox.showerror("Błąd", f"Wystąpił problem podczas przetwarzania folderu: {e}")
+            messagebox.showerror("Error", f"A problem occurred while processing the folder: {e}")
     
     else:
-        messagebox.showinfo("Błąd", "Nieprawidłowy tryb działania.")
+        messagebox.showinfo("Error", "Invalid mode.")
 
 if __name__ == "__main__":
     merge_files()

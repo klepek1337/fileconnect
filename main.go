@@ -13,7 +13,7 @@ import (
 func main() {
 	mode := askMode()
 	if mode == "" {
-		fmt.Println("Nieprawidłowy tryb działania.")
+		fmt.Println("Invalid mode.")
 		return
 	}
 
@@ -30,10 +30,10 @@ func main() {
 func askMode() string {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Wybierz tryb:")
-	fmt.Println("1 - Łączenie plików")
-	fmt.Println("2 - Generowanie struktury folderu")
-	fmt.Println("3 - Łączenie plików i struktura folderu")
+	fmt.Println("Select mode:")
+	fmt.Println("1 - Merge files")
+	fmt.Println("2 - Generate folder structure")
+	fmt.Println("3 - Merge files and folder structure")
 	fmt.Print("> ")
 
 	mode, _ := reader.ReadString('\n')
@@ -53,10 +53,10 @@ func runMode1() {
 
 	for {
 		file, err := dialog.File().
-			Title("Wybierz plik do połączenia").
-			Filter("Pliki tekstowe", "txt").
-			Filter("Pliki Python", "py").
-			Filter("Wszystkie pliki", "*").
+			Title("Select file to merge").
+			Filter("Text files", "txt").
+			Filter("Python files", "py").
+			Filter("All files", "*").
 			Load()
 
 		if err != nil || file == "" {
@@ -65,57 +65,57 @@ func runMode1() {
 
 		files = append(files, file)
 
-		fmt.Print("Dodać kolejny plik? (t/n): ")
+		fmt.Print("Add another file? (y/n): ")
 		answer, _ := reader.ReadString('\n')
 		answer = strings.TrimSpace(strings.ToLower(answer))
 
-		if answer != "t" {
+		if answer != "y" {
 			break
 		}
 	}
 
 	if len(files) == 0 {
-		fmt.Println("Nie wybrano żadnych plików.")
+		fmt.Println("No files selected.")
 		return
 	}
 
 	output, err := dialog.File().
-		Title("Podaj nazwę pliku wynikowego").
-		Filter("Pliki tekstowe", "txt").
-		Filter("Pliki Python", "py").
-		Filter("Wszystkie pliki", "*").
+		Title("Enter output filename").
+		Filter("Text files", "txt").
+		Filter("Python files", "py").
+		Filter("All files", "*").
 		Save()
 
 	if err != nil || output == "" {
-		fmt.Println("Nie wybrano pliku wynikowego.")
+		fmt.Println("No output file selected.")
 		return
 	}
 
 	if err := merger.MergeSelectedFiles(files, output); err != nil {
-		fmt.Println("Błąd:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
-	fmt.Println("Pliki zostały połączone do:", output)
+	fmt.Println("Files merged to:", output)
 }
 
 func runMode2() {
 	folder, err := dialog.Directory().
-		Title("Wybierz folder do analizy").
+		Title("Select folder to analyze").
 		Browse()
 
 	if err != nil || folder == "" {
-		fmt.Println("Nie wybrano folderu.")
+		fmt.Println("No folder selected.")
 		return
 	}
 
 	output, err := dialog.File().
-		Title("Podaj nazwę pliku wynikowego").
-		Filter("Pliki tekstowe", "txt").
+		Title("Enter output filename").
+		Filter("Text files", "txt").
 		Save()
 
 	if err != nil || output == "" {
-		fmt.Println("Nie wybrano pliku wynikowego.")
+		fmt.Println("No output file selected.")
 		return
 	}
 
@@ -124,30 +124,30 @@ func runMode2() {
 	}
 
 	if err := merger.GenerateTreeOnly(folder, output); err != nil {
-		fmt.Println("Błąd:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
-	fmt.Println("Struktura folderu została zapisana do:", output)
+	fmt.Println("Folder structure saved to:", output)
 }
 
 func runMode3() {
 	folder, err := dialog.Directory().
-		Title("Wybierz folder do analizy").
+		Title("Select folder to analyze").
 		Browse()
 
 	if err != nil || folder == "" {
-		fmt.Println("Nie wybrano folderu.")
+		fmt.Println("No folder selected.")
 		return
 	}
 
 	output, err := dialog.File().
-		Title("Podaj nazwę pliku wynikowego").
-		Filter("Pliki tekstowe", "txt").
+		Title("Enter output filename").
+		Filter("Text files", "txt").
 		Save()
 
 	if err != nil || output == "" {
-		fmt.Println("Nie wybrano pliku wynikowego.")
+		fmt.Println("No output file selected.")
 		return
 	}
 
@@ -156,11 +156,11 @@ func runMode3() {
 	}
 
 	if err := merger.GenerateTreeAndContents(folder, output); err != nil {
-		fmt.Println("Błąd:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
-	fmt.Println("Struktura folderu i zawartość plików zostały zapisane do:", output)
+	fmt.Println("Folder structure and file contents saved to:", output)
 }
 
 func hasTxtExtension(path string) bool {

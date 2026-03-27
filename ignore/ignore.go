@@ -38,8 +38,8 @@ func NewMatcher(baseDir string) (*Matcher, error) {
 			if line == "" || strings.HasPrefix(line, "#") {
 				continue
 			}
-			// Legacy nie filtruje linii zaczynających się od "!" w get_gitignore_spec(),
-			// więc tutaj też ich nie odrzucamy.
+			// Legacy does not filter lines starting with "!" in get_gitignore_spec(),
+			// so we do not skip them here either.
 			lines = append(lines, line)
 		}
 

@@ -15,24 +15,24 @@ import (
 
 func Run() {
 	a := app.New()
-	w := a.NewWindow("Łączenie plików tekstowych")
+	w := a.NewWindow("Merge text files")
 	w.Resize(fyne.NewSize(420, 220))
 
-	title := widget.NewLabel("Wybierz tryb działania")
+	title := widget.NewLabel("Select operation mode")
 	title.Alignment = fyne.TextAlignCenter
 
-	info := widget.NewLabel("1 - Łączenie plików\n2 - Generowanie struktury folderu\n3 - Łączenie plików i struktura folderu")
+	info := widget.NewLabel("1 - Merge files\n2 - Generate folder structure\n3 - Merge files and folder structure")
 	info.Alignment = fyne.TextAlignCenter
 
-	btn1 := widget.NewButton("1 - Łączenie plików", func() {
+	btn1 := widget.NewButton("1 - Merge files", func() {
 		runMode1(w)
 	})
 
-	btn2 := widget.NewButton("2 - Generowanie struktury folderu", func() {
+	btn2 := widget.NewButton("2 - Generate folder structure", func() {
 		runMode2(w)
 	})
 
-	btn3 := widget.NewButton("3 - Łączenie plików i struktura folderu", func() {
+	btn3 := widget.NewButton("3 - Merge files and folder structure", func() {
 		runMode3(w)
 	})
 
@@ -50,11 +50,11 @@ func Run() {
 func runMode1(w fyne.Window) {
 	open := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 		if err != nil {
-			showError(w, fmt.Sprintf("Wystąpił problem podczas wyboru plików: %v", err))
+			showError(w, fmt.Sprintf("A problem occurred while selecting files: %v", err))
 			return
 		}
 		if reader == nil {
-			showInfo(w, "Nie wybrano żadnych plików.")
+			showInfo(w, "No files selected.")
 			return
 		}
 	}, w)
@@ -77,11 +77,11 @@ func runMode1(w fyne.Window) {
 
 		save := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
 			if err != nil {
-				showError(w, fmt.Sprintf("Wystąpił problem podczas wyboru pliku wynikowego: %v", err))
+				showError(w, fmt.Sprintf("A problem occurred while selecting the output file: %v", err))
 				return
 			}
 			if writer == nil {
-				showInfo(w, "Nie wybrano pliku wynikowego.")
+				showInfo(w, "No output file selected.")
 				return
 			}
 
@@ -89,11 +89,11 @@ func runMode1(w fyne.Window) {
 			_ = writer.Close()
 
 			if err := merger.MergeSelectedFiles(filePaths, output); err != nil {
-				showError(w, fmt.Sprintf("Wystąpił problem podczas łączenia plików: %v", err))
+				showError(w, fmt.Sprintf("A problem occurred while merging files: %v", err))
 				return
 			}
 
-			showInfo(w, fmt.Sprintf("Pliki zostały połączone do: %s", output))
+			showInfo(w, fmt.Sprintf("Files merged to: %s", output))
 		}, w)
 
 		save.SetFileName("output.txt")
@@ -106,11 +106,11 @@ func runMode1(w fyne.Window) {
 func runMode2(w fyne.Window) {
 	folder := dialog.NewFolderOpen(func(uri fyne.ListableURI, err error) {
 		if err != nil {
-			showError(w, fmt.Sprintf("Wystąpił problem podczas wyboru folderu: %v", err))
+			showError(w, fmt.Sprintf("A problem occurred while selecting the folder: %v", err))
 			return
 		}
 		if uri == nil {
-			showInfo(w, "Nie wybrano folderu.")
+			showInfo(w, "No folder selected.")
 			return
 		}
 
@@ -118,11 +118,11 @@ func runMode2(w fyne.Window) {
 
 		save := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
 			if err != nil {
-				showError(w, fmt.Sprintf("Wystąpił problem podczas wyboru pliku wynikowego: %v", err))
+				showError(w, fmt.Sprintf("A problem occurred while selecting the output file: %v", err))
 				return
 			}
 			if writer == nil {
-				showInfo(w, "Nie wybrano pliku wynikowego.")
+				showInfo(w, "No output file selected.")
 				return
 			}
 
@@ -134,11 +134,11 @@ func runMode2(w fyne.Window) {
 			}
 
 			if err := merger.GenerateTreeOnly(folderPath, output); err != nil {
-				showError(w, fmt.Sprintf("Wystąpił problem podczas generowania struktury folderu: %v", err))
+				showError(w, fmt.Sprintf("A problem occurred while generating the folder structure: %v", err))
 				return
 			}
 
-			showInfo(w, fmt.Sprintf("Struktura folderu została zapisana do: %s", output))
+			showInfo(w, fmt.Sprintf("Folder structure saved to: %s", output))
 		}, w)
 
 		save.SetFileName("output.txt")
@@ -152,11 +152,11 @@ func runMode2(w fyne.Window) {
 func runMode3(w fyne.Window) {
 	folder := dialog.NewFolderOpen(func(uri fyne.ListableURI, err error) {
 		if err != nil {
-			showError(w, fmt.Sprintf("Wystąpił problem podczas wyboru folderu: %v", err))
+			showError(w, fmt.Sprintf("A problem occurred while selecting the folder: %v", err))
 			return
 		}
 		if uri == nil {
-			showInfo(w, "Nie wybrano folderu.")
+			showInfo(w, "No folder selected.")
 			return
 		}
 
@@ -164,11 +164,11 @@ func runMode3(w fyne.Window) {
 
 		save := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
 			if err != nil {
-				showError(w, fmt.Sprintf("Wystąpił problem podczas wyboru pliku wynikowego: %v", err))
+				showError(w, fmt.Sprintf("A problem occurred while selecting the output file: %v", err))
 				return
 			}
 			if writer == nil {
-				showInfo(w, "Nie wybrano pliku wynikowego.")
+				showInfo(w, "No output file selected.")
 				return
 			}
 
@@ -180,11 +180,11 @@ func runMode3(w fyne.Window) {
 			}
 
 			if err := merger.GenerateTreeAndContents(folderPath, output); err != nil {
-				showError(w, fmt.Sprintf("Wystąpił problem podczas przetwarzania folderu: %v", err))
+				showError(w, fmt.Sprintf("A problem occurred while processing the folder: %v", err))
 				return
 			}
 
-			showInfo(w, fmt.Sprintf("Struktura folderu i zawartość plików zostały zapisane do: %s", output))
+			showInfo(w, fmt.Sprintf("Folder structure and file contents saved to: %s", output))
 		}, w)
 
 		save.SetFileName("output.txt")
@@ -196,7 +196,7 @@ func runMode3(w fyne.Window) {
 }
 
 func showInfo(w fyne.Window, message string) {
-	dialog.ShowInformation("Sukces", message, w)
+	dialog.ShowInformation("Success", message, w)
 }
 
 func showError(w fyne.Window, message string) {

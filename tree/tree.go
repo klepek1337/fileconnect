@@ -11,7 +11,7 @@ import (
 )
 
 func WriteFolderStructure(w io.Writer, folderPath string, matcher *ignore.Matcher) error {
-	_, err := fmt.Fprintf(w, "### Struktura folderu: %s ###\n\n", filepath.Base(folderPath))
+	_, err := fmt.Fprintf(w, "### Folder structure: %s ###\n\n", filepath.Base(folderPath))
 	if err != nil {
 		return err
 	}

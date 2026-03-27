@@ -19,11 +19,11 @@ func MergeSelectedFiles(filePaths []string, outputFile string) error {
 	for _, filePath := range filePaths {
 		text, err := readUTF8TextFile(filePath)
 		if err != nil {
-			_, _ = fmt.Fprintf(out, "### Nie można odczytać pliku: %s - %v ###\n\n", filepath.Base(filePath), err)
+			_, _ = fmt.Fprintf(out, "### Cannot read file: %s - %v ###\n\n", filepath.Base(filePath), err)
 			continue
 		}
 
-		_, err = fmt.Fprintf(out, "### Zawartość pliku: %s ###\n", filepath.Base(filePath))
+		_, err = fmt.Fprintf(out, "### File contents: %s ###\n", filepath.Base(filePath))
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func GenerateTreeAndContents(folderPath string, outputFile string) error {
 		return err
 	}
 
-	if _, err := out.WriteString("\n\n### ZAWARTOŚĆ PLIKÓW ###\n\n"); err != nil {
+	if _, err := out.WriteString("\n\n### FILE CONTENTS ###\n\n"); err != nil {
 		return err
 	}
 
@@ -90,11 +90,11 @@ func GenerateTreeAndContents(folderPath string, outputFile string) error {
 
 		text, err := readUTF8TextFile(filePath)
 		if err != nil {
-			_, _ = fmt.Fprintf(out, "### Nie można odczytać pliku: %s - %v ###\n\n", relPath, err)
+			_, _ = fmt.Fprintf(out, "### Cannot read file: %s - %v ###\n\n", relPath, err)
 			continue
 		}
 
-		_, err = fmt.Fprintf(out, "### Zawartość pliku: %s ###\n", relPath)
+		_, err = fmt.Fprintf(out, "### File contents: %s ###\n", relPath)
 		if err != nil {
 			return err
 		}
@@ -120,7 +120,7 @@ func readUTF8TextFile(path string) (string, error) {
 	}
 
 	if !utf8.Valid(data) {
-		return "", fmt.Errorf("plik nie jest poprawnym UTF-8")
+		return "", fmt.Errorf("file is not valid UTF-8")
 	}
 
 	return string(data), nil
