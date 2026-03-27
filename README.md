@@ -100,4 +100,61 @@ For modes **2** and **3**:
 FileConnect turns an entire project into **one clean readable file** in seconds.
 If you work with code, AI, documentation, or large projects — this tool saves a lot of time.
 
----
+## Legacy Python Version
+
+This project originally started as a **Python application**, and the legacy version is still included in the repository.
+
+The Python version uses:
+
+* Tkinter GUI
+* PathSpec for `.gitignore` parsing
+* UTF-8 text merging
+* Folder structure generation
+
+The **Go version is a native rewrite** focused on:
+
+* performance
+* single executable
+* no Python dependency
+* easier distribution
+* faster file processing
+
+Both versions produce very similar output and follow the same logic.
+
+### Run legacy Python version
+
+```bash
+python legacy/fileconnect.py
+```
+
+Python requirements:
+
+```bash
+pip install pathspec
+```
+
+```md
+## Project History
+
+FileConnect originally started as a Python tool.
+After some time the project was rewritten in Go to make it faster,
+portable and easier to distribute as a single executable.
+
+The original Python version is still available in the `legacy/` folder.
+```
+
+## Go vs Python version
+
+| Feature               | Go      | Python  |
+| --------------------- | ------- | ------- |
+| Single executable     | Yes     | Kinda   |
+| Performance           | Fast    | Medium  |
+| Requires installation | No      | Yes     |
+| GUI                   | Minimal | Tkinter |
+| .gitignore support    | Yes     | Yes     |
+| Cross-platform        | Yes     | Yes     |
+| Legacy version        | —       | Yes     |
+
+
+
+
